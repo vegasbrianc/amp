@@ -1,0 +1,12 @@
+FROM appcelerator/alpine:20160928
+RUN apk --no-cache update && apk upgrade
+RUN apk --no-cache add go@community make musl-dev
+ENV GOPATH /go
+WORKDIR /go/src/github.com/appcelerator/amp
+COPY Makefile .
+COPY cmd ./cmd
+COPY api ./api
+COPY data ./data
+RUN pwd && ls && make install-tester
+ENTRYPOINT []
+CMD [ "/go/bin/amp-tester"]

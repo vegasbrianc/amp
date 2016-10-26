@@ -1,5 +1,5 @@
 
-.PHONY: all clean build build-cli build-server build-agent build-log-worker install install-server install-cli install-agent install-log-worker fmt simplify check version build-image run
+.PHONY: all clean build build-cli build-server build-agent build-log-worker install install-server install-cli install-agent install-log-worker install-tester fmt simplify check version build-image run
 .PHONY: test
 
 SHELL := /bin/bash
@@ -7,7 +7,7 @@ BASEDIR := $(shell echo $${PWD})
 
 # build variables (provided to binaries by linker LDFLAGS below)
 VERSION := 1.0.0
-BUILD := $(shell git rev-parse HEAD | cut -c1-8)
+BUILD := $(shell git rev-parse HEAD | cut -c1-8 || echo "unknown")
 
 LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 
@@ -37,8 +37,9 @@ CLI := amp
 SERVER := amplifier
 AGENT := amp-agent
 LOGWORKER := amp-log-worker
+TESTER := amp-tester
 
-TAG := latest
+TAG := local
 IMAGE := $(OWNER)/amp:$(TAG)
 
 # tools
@@ -78,7 +79,7 @@ install-deps:
 update-deps:
 	@$(GLIDE_UPDATE)
 
-install: install-cli install-server install-agent install-log-worker
+install: install-cli install-server install-agent install-log-worker install-tester
 
 install-cli: proto
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(CLI)
@@ -91,6 +92,9 @@ install-agent: proto
 
 install-log-worker: proto
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(LOGWORKER)
+
+install-tester:
+	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(TESTER)
 
 build: build-cli build-server build-agent build-log-worker
 
@@ -118,6 +122,7 @@ install-host: proto-host
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(SERVER)
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AGENT)
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(LOGWORKER)
+	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(TESTER)
 
 # used to run protoc when you're already inside a container
 proto-host: $(PROTOFILES)
@@ -139,12 +144,5 @@ run: build-image
 	@CID=$(shell docker run --net=host -d --name $(SERVER) $(IMAGE)) && echo $${CID}
 
 test:
-#	@go test -v $(REPO)/api/rpc/build
-#	@go test -v $(REPO)/api/rpc/project
-	@go test -v $(REPO)/api/rpc/service
-	@go test -v $(REPO)/data/storage/etcd
-	@go test -v $(REPO)/api/rpc/stack
-	@go test -v $(REPO)/data/influx
-	@go test -v $(REPO)/api/rpc/stats
-	@go test -v $(REPO)/api/rpc/topic
-	@go test -v $(REPO)/api/rpc/logs
+	docker service rm amp-tester
+	docker service create -e endpoints=http://etcd:2379 -e elasticsearchURL=http://elasticsearch:9200 -e natsURL=nats://nats:4222 -e influxURL=http://influxdb:8086 --network=amp-infra --mount type=bind,source=$${GOPATH}/src/github.com/appcelerator/amp,target=/go/src/github.com/appcelerator/amp --restart-condition=none --name=amp-tester appcelerator/amp:$(TAG) /usr/local/bin/amp-tester
