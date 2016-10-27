@@ -14,7 +14,7 @@ INFLUXDATA_VERSION=1.0.2
 KAPACITOR_VERSION=1.0.2-1
 TELEGRAF_VERSION=1.0.1
 GRAFANA_VERSION=3.1.1-1
-ELASTICSEARCH_VERSION=2.3.3
+ELASTICSEARCH_VERSION=5.0.0
 ETCD_VERSION=3.1.0-rc.0
 NATS_VERSION=0.3.0
 HAPROXY_VERSION=1.0.1
@@ -286,6 +286,14 @@ ampui() { # Owner: freignat91
 }
 
 elasticsearch() { # Owner: bertrand-quenin
+  local _c
+  local _min_value=262144
+  _c=$(sysctl vm.max_map_count | awk '{print $NF}')
+  if [[ $_c -lt $_min_value ]]; then
+    echo "INFO - set VM mmap count for elasticsearch to $_min_value"
+    sysctl -w vm.max_map_count=$_min_value
+  fi
+  
   docker service create --with-registry-auth --network amp-infra --name elasticsearch \
     --label io.amp.role="infrastructure" \
     -p 9200:9200 \
