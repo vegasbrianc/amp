@@ -88,12 +88,14 @@ func Start(config Config) {
 	})
 
 	// start listening
-	lis, err := net.Listen("tcp", config.Port)
-	if err != nil {
-		log.Fatalf("amplifer is unable to listen on: %s\n%v", config.Port[1:], err)
+	if config.ServerAddress == "127.0.0.1" {
+		lis, err := net.Listen("tcp", ":"+config.ServerPort)
+		if err != nil {
+			log.Fatalf("amplifer is unable to listen on: %s\n%v", config.ServerPort, err)
+		}
+		s.Serve(lis)
 	}
-	log.Printf("amplifier is listening on port %s\n", config.Port[1:])
-	s.Serve(lis)
+	log.Printf("amplifier is listening on %s:%s\n", config.ServerAddress, config.ServerPort)
 }
 
 func initEtcd(config Config) error {

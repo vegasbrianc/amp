@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	defaultPort         = ":50101"
-	defaultClientID     = ""
-	defaultClientSecret = ""
+	defaultServerAddress = "127.0.0.1"
+	defaultServerPort    = "50101"
+	defaultClientID      = ""
+	defaultClientSecret  = ""
 )
 
 var (
@@ -34,7 +35,8 @@ var (
 // config vars - used for generating a config from command line flags
 var (
 	config           server.Config
-	port             string
+	serverAddress    string
+	serverPort       string
 	etcdEndpoints    string
 	elasticsearchURL string
 	clientID         string
@@ -49,7 +51,8 @@ var (
 func parseFlags() {
 	// set up flags
 	flag.BoolVar(&isService, "service", false, "Launched as a service into swarm network")
-	flag.StringVarP(&port, "port", "p", defaultPort, "server port (default '"+defaultPort+"')")
+	flag.StringVar(&serverAddress, "server", defaultServerAddress, "server address (default '"+defaultServerAddress+"')")
+	flag.StringVarP(&serverPort, "port", "p", defaultServerPort, "server port (default '"+defaultServerPort+"')")
 	flag.StringVarP(&etcdEndpoints, "endpoints", "e", etcdDefaultEndpoints, "etcd comma-separated endpoints")
 	flag.StringVarP(&elasticsearchURL, "elasticsearchURL", "s", elasticsearchDefaultURL, "elasticsearch URL (default '"+elasticsearchDefaultURL+"')")
 	flag.StringVarP(&clientID, "clientid", "i", defaultClientID, "github app clientid (default '"+defaultClientID+"')")
@@ -70,7 +73,8 @@ func parseFlags() {
 	}
 
 	// update config
-	config.Port = port
+	config.ServerAddress = serverAddress
+	config.ServerPort = serverPort
 	config.ClientID = clientID
 	config.ClientSecret = clientSecret
 	for _, s := range strings.Split(etcdEndpoints, ",") {

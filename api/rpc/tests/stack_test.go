@@ -1,18 +1,15 @@
-package stack_test
+package tests
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/appcelerator/amp/api/rpc/stack"
 	"github.com/appcelerator/amp/api/runtime"
-	"github.com/appcelerator/amp/api/server"
 	"github.com/appcelerator/amp/api/state"
 	"github.com/docker/docker/pkg/stringid"
 	"github.com/stretchr/testify/assert"
-	"golang.org/x/net/context"
 )
 
 const (
@@ -59,25 +56,13 @@ services:
         internal_port: 3000`
 )
 
-var (
-	client stack.StackServiceClient
-	ctx    context.Context
-)
-
-func TestMain(m *testing.M) {
-	_, conn := server.StartTestServer()
-	ctx = context.Background()
-	client = stack.NewStackServiceClient(conn)
-	os.Exit(m.Run())
-}
-
 //Test two stacks life cycle in the same time
-func TestShouldManageStackLifeCycleSuccessfully(t *testing.T) {
+func TestStackShouldManageStackLifeCycleSuccessfully(t *testing.T) {
 	//Start stack essai1
 	name := fmt.Sprintf("test-%d", time.Now().Unix())
 	//Start stack test
 	t.Log("start stack " + name)
-	rUp, errUp := client.Up(ctx, &stack.StackFileRequest{StackName: name, Stackfile: example1})
+	rUp, errUp := stackClient.Up(ctx, &stack.StackFileRequest{StackName: name, Stackfile: example1})
 	if errUp != nil {
 		t.Fatal(errUp)
 	}
@@ -86,7 +71,7 @@ func TestShouldManageStackLifeCycleSuccessfully(t *testing.T) {
 	//verifyusing ls
 	t.Log("perform stack ls")
 	listRequest := stack.ListRequest{}
-	_, errls := client.List(ctx, &listRequest)
+	_, errls := stackClient.List(ctx, &listRequest)
 	if errls != nil {
 		t.Fatal(errls)
 	}
@@ -96,14 +81,14 @@ func TestShouldManageStackLifeCycleSuccessfully(t *testing.T) {
 	}
 	//Stop stack test
 	t.Log("stop stack " + name)
-	rStop, errStop := client.Stop(ctx, &stackRequest)
+	rStop, errStop := stackClient.Stop(ctx, &stackRequest)
 	if errStop != nil {
 		t.Fatal(errStop)
 	}
 	assert.NotEmpty(t, rStop.StackId, "Stack test StackId should not be empty")
 	//Restart stack test
 	t.Log("restart stack " + name)
-	rRestart, errRestart := client.Start(ctx, &stackRequest)
+	rRestart, errRestart := stackClient.Start(ctx, &stackRequest)
 	if errRestart != nil {
 		t.Fatal(errRestart)
 	}
@@ -115,7 +100,7 @@ func TestShouldManageStackLifeCycleSuccessfully(t *testing.T) {
 		StackIdent: rUp.StackId,
 		Force:      true,
 	}
-	rRemove, errRemove := client.Remove(ctx, &removeRequest)
+	rRemove, errRemove := stackClient.Remove(ctx, &removeRequest)
 	if errRemove != nil {
 		t.Fatal(errRemove)
 	}

@@ -1,5 +1,5 @@
 
-.PHONY: all clean build build-cli build-server build-agent build-log-worker install install-server install-cli install-agent install-log-worker fmt simplify check version build-image run
+.PHONY: all clean build build-cli build-server build-agent build-log-worker build-amptest install install-server install-cli install-agent install-log-worker install-amptest fmt simplify check version build-image run
 .PHONY: test
 
 SHELL := /bin/bash
@@ -37,6 +37,7 @@ CLI := amp
 SERVER := amplifier
 AGENT := amp-agent
 LOGWORKER := amp-log-worker
+AMPTEST := amp-test
 
 TAG := latest
 IMAGE := $(OWNER)/amp:$(TAG)
@@ -96,7 +97,10 @@ install-agent: proto
 install-log-worker: proto
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(LOGWORKER)
 
-build: build-cli build-server build-agent build-log-worker
+install-amptest: proto
+	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AMPTEST)
+
+build: build-cli build-server build-agent build-log-worker build-amptest
 
 build-cli: proto
 	@hack/build $(CLI)
@@ -110,6 +114,9 @@ build-agent: proto
 build-log-worker: proto
 	@hack/build $(LOGWORKER)
 
+build-amptest: proto
+	@hack/build $(AMPTEST)
+
 build-server-image:
 	@docker build -t appcelerator/$(SERVER):$(TAG) .
 
@@ -122,6 +129,7 @@ install-host: proto-host
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(SERVER)
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AGENT)
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(LOGWORKER)
+	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AMPTEST)
 
 # used to run protoc when you're already inside a container
 proto-host: $(PROTOFILES)
@@ -143,8 +151,7 @@ run: build-image
 	@CID=$(shell docker run --net=host -d --name $(SERVER) $(IMAGE)) && echo $${CID}
 
 test:
-	$(foreach pkg,$(TEST_PACKAGES),\
-		go test -v $(pkg);)
+	@go test -v $(REPO)/api/rpc/tests
 
 cover:
 	echo "mode: count" > coverage-all.out
@@ -152,4 +159,13 @@ cover:
 		go test -coverprofile=coverage.out -covermode=count $(pkg);\
 		tail -n +2 coverage.out >> coverage-all.out;)
 	go tool cover -html=coverage-all.out
+
+test-remote: 
+	@docker service create --with-registry-auth --network amp-infra --name amp-test \
+	--restart-condition "none" \
+    	--label io.amp.role="infrastructure" \
+        appcelerator/amp:latest2 amp-test
+
+
+>>>>>>> test-service
 

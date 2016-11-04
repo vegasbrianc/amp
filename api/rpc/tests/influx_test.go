@@ -1,22 +1,18 @@
-package influx
+package tests
 
 import (
-	"os"
 	"testing"
 	"time"
+
+	"github.com/appcelerator/amp/api/server"
+	. "github.com/appcelerator/amp/data/influx"
 )
 
 var (
 	influx Influx
 )
 
-func TestMain(m *testing.M) {
-	influxInit()
-	defer influx.Close()
-	os.Exit(m.Run())
-}
-
-func TestQuery(t *testing.T) {
+func TestInfluxQuery(t *testing.T) {
 	res, err := influx.Query("SHOW MEASUREMENTS")
 	if err != nil {
 		t.Fatal(err)
@@ -32,12 +28,12 @@ func TestQuery(t *testing.T) {
 	}
 }
 
-func influxInit() {
-	host := os.Getenv("influxhost")
-	cstr := "http://127.0.0.1:8086"
-	if host != "" {
-		cstr = "http://" + host + ":8086"
-	}
+func influxInit(config server.Config) {
+	cstr := config.InfluxURL
 	influx = New(cstr, "_internal", "admin", "changme")
 	influx.Connect(60 * time.Second)
+}
+
+func influxEnd() {
+	influx.Close()
 }

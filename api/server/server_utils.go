@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	defaultPort             = ":50101"
 	etcdDefaultEndpoints    = "http://127.0.0.1:2379"
-	serverAddress           = "127.0.0.1" + defaultPort
+	serverDefaultAddress    = "127.0.0.1"
+	serverDefaultPort       = "50101"
 	elasticsearchDefaultURL = "http://127.0.0.1:9200"
 	natsDefaultURL          = "nats://127.0.0.1:4222"
 	influxDefaultURL        = "http://127.0.0.1:8086"
@@ -22,7 +22,8 @@ const (
 
 var (
 	config           Config
-	port             string
+	serverAddress    string
+	serverPort       string
 	etcdEndpoints    string
 	elasticsearchURL string
 	natsURL          string
@@ -32,9 +33,13 @@ var (
 )
 
 func parseEnv() {
-	port = os.Getenv("port")
-	if port == "" {
-		port = defaultPort
+	serverAddress = os.Getenv("server_address")
+	if serverAddress == "" {
+		serverAddress = serverDefaultAddress
+	}
+	serverPort = os.Getenv("server_port")
+	if serverPort == "" {
+		serverPort = serverDefaultPort
 	}
 	etcdEndpoints = os.Getenv("endpoints")
 	if etcdEndpoints == "" {
@@ -60,11 +65,11 @@ func parseEnv() {
 	if dockerVersion == "" {
 		dockerVersion = dockerDefaultVersion
 	}
-	// update config
-	config.Port = port
 	for _, s := range strings.Split(etcdEndpoints, ",") {
 		config.EtcdEndpoints = append(config.EtcdEndpoints, s)
 	}
+	config.ServerAddress = serverAddress
+	config.ServerPort = serverPort
 	config.ElasticsearchURL = elasticsearchURL
 	config.NatsURL = natsURL
 	config.InfluxURL = influxURL
@@ -86,7 +91,7 @@ func StartTestServer() (Config, *grpc.ClientConn) {
 
 	// Connect to amplifier
 	log.Println("Connecting to amplifier")
-	conn, err := grpc.Dial(serverAddress,
+	conn, err := grpc.Dial(serverAddress+":"+serverPort,
 		grpc.WithInsecure(),
 		grpc.WithBlock(),
 		grpc.WithTimeout(60*time.Second))

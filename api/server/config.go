@@ -6,7 +6,8 @@ import (
 
 // Config is used for amplifier configuration settings
 type Config struct {
-	Port             string
+	ServerAddress    string
+	ServerPort       string
 	EtcdEndpoints    []string
 	ElasticsearchURL string
 	ClientID         string
@@ -19,5 +20,5 @@ type Config struct {
 
 // String is used to display struct as a string
 func (config Config) String() string {
-	return fmt.Sprintf("{ Port: %s, EtcdEndpoints: %v, ElasticsearchURL: %s, NatsURL: %s, InfluxURL: %s, Docker: %s}", config.Port, config.EtcdEndpoints, config.ElasticsearchURL, config.NatsURL, config.InfluxURL, config.DockerURL)
+	return fmt.Sprintf("{ Server: %s:%s, EtcdEndpoints: %v, ElasticsearchURL: %s, NatsURL: %s, InfluxURL: %s, Docker: %s}", config.ServerAddress, config.ServerPort, config.EtcdEndpoints, config.ElasticsearchURL, config.NatsURL, config.InfluxURL, config.DockerURL)
 }

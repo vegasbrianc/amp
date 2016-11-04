@@ -1,4 +1,4 @@
-package etcd_test
+package tests
 
 import (
 	"fmt"
@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/appcelerator/amp/api/runtime"
-	"github.com/appcelerator/amp/api/server"
 	"github.com/appcelerator/amp/api/state"
 	"github.com/appcelerator/amp/data/storage"
 	. "github.com/appcelerator/amp/data/storage/etcd"
@@ -31,17 +30,14 @@ func newContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), defTimeout)
 }
 
-func TestMain(m *testing.M) {
+func initEtcd() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.Lshortfile)
 	log.SetPrefix("test: ")
-
-	server.StartTestServer()
 	store = runtime.Store
-	os.Exit(m.Run())
 }
 
-func TestCreate(t *testing.T) {
+func TestEtcdCreate(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	key := "foo"
 	val := &TestMessage{Id: "100", Name: "AMP"}
@@ -61,7 +57,7 @@ func TestCreate(t *testing.T) {
 	}
 }
 
-func TestGet(t *testing.T) {
+func TestEtcdGet(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	key := "foo"
 	out := &TestMessage{}
@@ -80,7 +76,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
-func TestGetWithError(t *testing.T) {
+func TestEtcdGetWithError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	key := "foobar"
 	out := &TestMessage{}
@@ -94,7 +90,7 @@ func TestGetWithError(t *testing.T) {
 	}
 }
 
-func TestGetIgnoreError(t *testing.T) {
+func TestEtcdGetIgnoreError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	key := "foobar"
 	out := &TestMessage{}
@@ -108,7 +104,7 @@ func TestGetIgnoreError(t *testing.T) {
 	}
 }
 
-func TestDelete(t *testing.T) {
+func TestEtcdDelete(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	key := "foo"
 	out := &TestMessage{}
@@ -126,7 +122,7 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestUpdate(t *testing.T) {
+func TestEtcdUpdate(t *testing.T) {
 	key := "foo"
 	val := &TestMessage{Id: "100", Name: "bar"}
 	ttl := int64(0)
@@ -163,7 +159,7 @@ func TestUpdate(t *testing.T) {
 	}
 }
 
-func TestList(t *testing.T) {
+func TestEtcdList(t *testing.T) {
 	// generic context
 	ctx := context.Background()
 
@@ -234,7 +230,7 @@ func TestList(t *testing.T) {
 	}
 }
 
-func TestCompareAndSet(t *testing.T) {
+func TestEtcdCompareAndSet(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	defer cancel()
 
@@ -256,7 +252,7 @@ func TestCompareAndSet(t *testing.T) {
 	}
 }
 
-func TestWatch(t *testing.T) {
+func TestEtcdWatch(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), defTimeout)
 	defer cancel()
 
