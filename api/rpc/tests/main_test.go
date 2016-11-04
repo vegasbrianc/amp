@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -38,7 +39,10 @@ func TestMain(m *testing.M) {
 	logsClient = logs.NewLogsClient(conn)
 
 	//Init packages if needed
-	logsInit(config)
+	if err := logsInit(config); err != nil {
+		fmt.Printf("logInit error: %v\n", err)
+		os.Exit(1)
+	}
 	initEtcd()
 	influxInit(config)
 

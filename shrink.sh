@@ -49,11 +49,6 @@ if [ $? -ne 0 ]; then
   echo "failed"
   exit 1
 fi
-$DOCKER cp amp-builder:/go/bin/amp-test ./amp-test >&2
-if [ $? -ne 0 ]; then
-  echo "failed"
-  exit 1
-fi
 echo "OK"
 
 echo -n "building shrinked image... "

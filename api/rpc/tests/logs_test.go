@@ -41,7 +41,10 @@ func logsInit(config server.Config) error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to nats\n")
 	}
-	produceLogEntries(100)
+	err = produceLogEntries(100)
+	if err != nil {
+		return err
+	}
 	// Wait for entries to be indexed
 	for {
 		time.Sleep(1 * time.Second)

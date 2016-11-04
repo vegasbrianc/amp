@@ -1,5 +1,5 @@
 
-.PHONY: all clean build build-cli build-server build-agent build-log-worker build-amptest install install-server install-cli install-agent install-log-worker install-amptest fmt simplify check version build-image run
+.PHONY: all clean build build-cli build-server build-agent build-log-worker install install-server install-cli install-agent install-log-worker simplify check version build-image run
 .PHONY: test
 
 SHELL := /bin/bash
@@ -37,7 +37,6 @@ CLI := amp
 SERVER := amplifier
 AGENT := amp-agent
 LOGWORKER := amp-log-worker
-AMPTEST := amp-test
 
 TAG := latest
 IMAGE := $(OWNER)/amp:$(TAG)
@@ -97,26 +96,6 @@ install-agent: proto
 install-log-worker: proto
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(LOGWORKER)
 
-install-amptest: proto
-	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AMPTEST)
-
-build: build-cli build-server build-agent build-log-worker build-amptest
-
-build-cli: proto
-	@hack/build $(CLI)
-
-build-server: proto
-	@hack/build $(SERVER)
-
-build-agent: proto
-	@hack/build $(AGENT)
-
-build-log-worker: proto
-	@hack/build $(LOGWORKER)
-
-build-amptest: proto
-	@hack/build $(AMPTEST)
-
 build-server-image:
 	@docker build -t appcelerator/$(SERVER):$(TAG) .
 
@@ -129,7 +108,6 @@ install-host: proto-host
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(SERVER)
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AGENT)
 	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(LOGWORKER)
-	@go install $(LDFLAGS) $(REPO)/$(CMDDIR)/$(AMPTEST)
 
 # used to run protoc when you're already inside a container
 proto-host: $(PROTOFILES)
@@ -166,6 +144,4 @@ test-remote:
     	--label io.amp.role="infrastructure" \
         appcelerator/amp:latest2 amp-test
 
-
->>>>>>> test-service
 
