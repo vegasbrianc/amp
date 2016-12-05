@@ -1,10 +1,12 @@
 - platform-status:
+  run: false
   cmd: amp platform status
   args:
   options:
   expectation: platform-status-running
 
 - platform-stop:
+  run: false
   cmd: amp platform stop
   args:
   options:
@@ -12,12 +14,14 @@
   timeout: 1m
 
 - platform-status:
+  run: false
   cmd: amp platform status
   args:
   options:
   expectation: platform-status-stopped
 
 - docker-swarm-leave:
+  run: false
   cmd: docker swarm leave
   args:
   options:

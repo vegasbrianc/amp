@@ -1,4 +1,5 @@
 - service-create:
+  run: true
   cmd: amp service create
   args:
     - appcelerator/pinger
@@ -8,6 +9,7 @@
   expectation: service-id
 
 - service-list:
+  run: true
   cmd: docker service ls
   args:
   options:
@@ -17,6 +19,7 @@
   timeout: 20s
 
 - service-curl:
+  run: true
   cmd: curl
   args:
     - localhost:{{call .port `pinger1` 49152 65535}}/ping
@@ -27,6 +30,7 @@
   timeout: 20s
 
 - service-remove:
+  run: true
   cmd: amp service rm
   args:
     - "{{call .uniq `pinger`}}"
@@ -35,6 +39,7 @@
   expectation: service-remove
 
 - service-list:
+  run: true
   cmd: docker service ls
   args:
   options:

@@ -1,4 +1,5 @@
 - stats-container:
+  run: true
   cmd: amp stats
   args:
     -  --container
@@ -7,6 +8,7 @@
   expectation: stats-container
 
 - stats-cpu:
+  run: true
   cmd: amp stats
   args:
     - --cpu
@@ -15,6 +17,7 @@
   expectation: stats-cpu
 
 - stats-io:
+  run: true
   cmd: amp stats
   args:
     - --io
@@ -23,6 +26,7 @@
   expectation: stats-io
 
 - stats-net:
+  run: true
   cmd: amp stats
   args:
     - --net
@@ -31,6 +35,7 @@
   expectation: stats-net
 
 - stats-node:
+  run: true
   cmd: amp stats
   args:
     - --node
@@ -39,6 +44,7 @@
   expectation: stats-node
 
 - stats-service:
+  run: true
   cmd: amp stats
   args:
     - --service
@@ -47,6 +53,7 @@
   expectation: stats-service
 
 - stats-task:
+  run: true
   cmd: amp stats
   args:
     - --task

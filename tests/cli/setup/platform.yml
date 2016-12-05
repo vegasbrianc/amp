@@ -1,4 +1,5 @@
 - docker-swarm-initialize:
+  run: false
   cmd: docker swarm init
   args:
   options:
@@ -6,6 +7,7 @@
   timeout: 20s
 
 - platform-pull:
+  run: false
   cmd: amp platform pull
   args:
   options:
@@ -13,6 +15,7 @@
   timeout: 5m
 
 - platform-start:
+  run: false
   cmd: amp platform start
   args:
   options:
@@ -20,12 +23,14 @@
   timeout: 2m
 
 - platform-status:
+  run: false
   cmd: amp platform status
   args:
   options:
   expectation: platform-status-running
 
 - platform-stop:
+  run: false
   cmd: amp platform stop
   args:
   options:
@@ -33,12 +38,14 @@
   timeout: 1m
 
 - platform-status:
+  run: false
   cmd: amp platform status
   args:
   options:
   expectation: platform-status-stopped
 
 - platform-start:
+  run: false
   cmd: amp platform start
   args:
   options:

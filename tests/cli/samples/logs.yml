@@ -1,4 +1,5 @@
 - logs-all:
+  run: true
   cmd: amp logs
   args:
     -
@@ -7,6 +8,7 @@
   expectation: logs-all
 
 - logs-metadata:
+  run: true
   cmd: amp logs
   args:
     -  -m
@@ -15,6 +17,7 @@
   expectation: logs-metadata
 
 - logs-numbered:
+  run: true
   cmd: amp logs
   args:
     -
@@ -23,6 +26,7 @@
   expectation: logs-numbered
 
 - logs-stack:
+  run: true
   cmd: amp logs
   args:
     -

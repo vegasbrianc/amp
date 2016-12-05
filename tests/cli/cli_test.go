@@ -21,6 +21,7 @@ type TestSpec struct {
 
 // CommandSpec defines the commands with arguments and options
 type CommandSpec struct {
+	Run         bool     `yaml:"run"`
 	Cmd         string   `yaml:"cmd"`
 	Args        []string `yaml:"args"`
 	Options     []string `yaml:"options"`
