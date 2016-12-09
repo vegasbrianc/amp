@@ -195,7 +195,6 @@ test-integration:
 		sleep 1 ; \
 	done; \
 	docker logs -f $$containerid; \
-	docker service rm amp-integration-test > /dev/null 2>&1 || true \
 	exit `docker inspect --format='{{.State.ExitCode}}' $$containerid`
 
 test-integration-host:
