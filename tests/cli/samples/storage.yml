@@ -1,0 +1,49 @@
+- storage-create:
+  cmd: amp storage create
+  args:
+     - foo
+     - bar
+  options:
+     -
+  expectation: storage-create
+
+- storage-get:
+  cmd: amp storage get
+  args:
+     - foo
+  options:
+     -
+  expectation: storage-get
+
+- storage-update:
+  cmd: amp storage update
+  args:
+     - foo
+     - bar1
+  options:
+     -
+  expectation: storage-update
+
+- storage-ls:
+  cmd: amp storage ls
+  args:
+     -
+  options:
+     -
+  expectation: storage-ls
+
+- storage-delete:
+  cmd: amp storage delete
+  args:
+     - foo
+  options:
+     -
+  expectation: storage-delete
+
+- storage-ls:
+  cmd: amp storage ls
+  args:
+     -
+  options:
+     -
+  expectation: storage-unavailable
